@@ -1,3 +1,4 @@
 CLAUDE.md
 *.csv
 backend/venv
+backend/instance/support.db
