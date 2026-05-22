@@ -14,6 +14,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetchEscalations, fetchPerformance, fetchSentiment } from "@/api/analytics";
@@ -30,7 +31,6 @@ export function AnalyticsPage() {
   const { data: sentiment } = useQuery({ queryKey: ["sentiment"], queryFn: fetchSentiment, refetchInterval: 60000 });
   const { data: perf } = useQuery({ queryKey: ["performance"], queryFn: fetchPerformance, refetchInterval: 60000 });
 
-  const escReasons = Object.entries(escalations?.escalation_reasons ?? {}).map(([name, value]) => ({ name, value }));
   const aiVsHuman = perf?.ai_vs_human
     ? [
         { name: "AI Resolved", value: perf.ai_vs_human.ai, fill: "#8b5cf6" },
@@ -40,47 +40,28 @@ export function AnalyticsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm">Escalation Rate (7 days)</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {el ? (
-              <Skeleton className="h-48" />
-            ) : (
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={escalations?.daily_escalations ?? []}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                  <XAxis dataKey="date" tick={{ fontSize: 10 }} tickFormatter={(v) => v.slice(5)} />
-                  <YAxis tick={{ fontSize: 10 }} />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="total" fill="#94a3b8" name="Total" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="escalated" fill="#ef4444" name="Escalated" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm">Escalation Reasons</CardTitle>
-          </CardHeader>
-          <CardContent>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">Escalation Rate (7 days)</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {el ? (
+            <Skeleton className="h-48" />
+          ) : (
             <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={escReasons} layout="vertical">
+              <BarChart data={escalations?.daily_escalations ?? []}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                <XAxis type="number" tick={{ fontSize: 10 }} />
-                <YAxis dataKey="name" type="category" tick={{ fontSize: 10 }} width={130} />
+                <XAxis dataKey="date" tick={{ fontSize: 10 }} tickFormatter={(v) => v.slice(5)} />
+                <YAxis tick={{ fontSize: 10 }} />
                 <Tooltip />
-                <Bar dataKey="value" fill="#ef4444" radius={[0, 4, 4, 0]} name="Count" />
+                <Legend />
+                <Bar dataKey="total" fill="#94a3b8" name="Total" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="escalated" fill="#ef4444" name="Escalated" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
+          )}
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

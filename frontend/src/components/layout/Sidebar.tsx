@@ -17,7 +17,7 @@ export function Sidebar() {
     <aside className="flex h-screen w-56 flex-col border-r bg-white">
       <div className="flex h-16 items-center gap-2 border-b px-4">
         <Bot className="h-6 w-6 text-primary" />
-        <span className="text-lg font-bold tracking-tight">Jeeva AI</span>
+        <span className="text-lg font-bold tracking-tight">Ticket AI</span>
       </div>
 
       <nav className="flex-1 space-y-1 p-3">

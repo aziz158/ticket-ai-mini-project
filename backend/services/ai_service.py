@@ -35,21 +35,41 @@ def _call_ollama(prompt: str) -> str | None:
 
 def classify_ticket(subject: str, message: str) -> dict:
     prompt = (
-        f"You are a customer support classifier. Classify this ticket into exactly one category.\n"
+        f"You are a customer support classifier. Classify this ticket into exactly one category "
+        f"and rate your confidence as a percentage.\n"
         f"Categories: {', '.join(CATEGORIES)}\n\n"
         f"Subject: {subject}\nMessage: {message}\n\n"
-        f"Respond with ONLY the category name, nothing else."
+        f"Respond with ONLY this format and nothing else: <category>, <confidence>\n"
+        f"Example: Billing, 92"
     )
     result = _call_ollama(prompt)
     category = "General Inquiry"
     confidence = 0.75
 
     if result:
-        for cat in CATEGORIES:
-            if cat.lower() in result.lower():
-                category = cat
-                confidence = 0.88
-                break
+        # Parse "Category, 92" format
+        parts = result.strip().split(",")
+        if len(parts) >= 2:
+            raw_cat = parts[0].strip()
+            raw_conf = parts[-1].strip().rstrip("%")
+            for cat in CATEGORIES:
+                if cat.lower() in raw_cat.lower():
+                    category = cat
+                    break
+            try:
+                parsed = float(raw_conf)
+                # Model may return 0-100 or 0-1
+                confidence = parsed / 100 if parsed > 1 else parsed
+                confidence = max(0.0, min(confidence, 1.0))
+            except ValueError:
+                confidence = 0.80
+        else:
+            # Fallback: plain category name with no confidence
+            for cat in CATEGORIES:
+                if cat.lower() in result.lower():
+                    category = cat
+                    confidence = 0.80
+                    break
 
     return {"category": category, "confidence": round(confidence, 2)}
 
