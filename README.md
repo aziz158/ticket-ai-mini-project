@@ -1,4 +1,4 @@
-﻿# Jeeva AI — Customer Support Command Center
+﻿# Ticket AI — Customer Support Command Center
 
 A full-stack SaaS dashboard for AI-assisted customer support ticket management, powered by a local **Llama 3.2** model running through **Ollama**.
 
